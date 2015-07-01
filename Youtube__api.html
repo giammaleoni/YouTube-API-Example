@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://www.youtube.com/iframe_api" type="text/javascript"></script>
+
+    <style>
+        #video-list {
+            float: left;
+            width: 50%;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        #video-list li{
+            cursor: pointer;
+        }
+
+        #player-content{
+            float: left;
+            width: 45%;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#go').click(function(event) {
+                var query = $('#query').val();
+
+                $.getJSON('https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + encodeURIComponent(query) + '&orderby=relevance&max-results=10&category=music&key=AIzaSyCDSUsNu8Xdp6dL95Qnu62seqaq8Hzgkl8', function(response) {
+                    console.log(response);
+
+                    for(i=0; i < response.items.length; i++) {
+                        $('#video-list').append('<li id="' +response.items[i].id.videoId + '">' + response.items[i].snippet.title + '</li>')
+                        };
+                        
+                    playVideo($('#video-list li:first').attr('id'));
+                    
+                    $('#video-list li').click(
+            			function(event) {
+            				console.log("click");
+                    		//event.preventDefault();
+                    		playVideo($(this).attr('id'));
+            			}
+            		);
+                });
+
+            });
+            
+            
+
+        });
+
+        playVideo = function(videoId) {
+        	var path = '<iframe id="youtube-player" type="text/html" width="420" height="315" src="http://www.youtube.com/embed/' +videoId + '?autoplay=1"></iframe>';
+            $('#player-content').html(path);
+            
+
+            //player = new YT.Player('youtube-player', {
+            //    events: {
+            //        'onReady': function (event) {
+            //            event.target.playVideo();
+            //        }, 'onStateChange': function (event) {
+            //            if (event.target.getPlayState() === YT.PlayerState.ENDED) {
+            //                var videoUrl = event.target.getVideoUrl();
+            //                var videoId = videoUrl.replace('http://www.youtube.com/watch?feature=player_embedde&v=', '');
+//
+            //                playVideo($('#' + videoId).next().attr('id'));
+            //            }
+            //        }
+            //    }
+            //});
+
+        }
+
+
+
+    </script>
+</head>
+<body>
+<input type="text" id="query"/>
+<input type="button" value="go" id="go"/>
+<div id="player-content"></div>
+<ul id="video-list">
+</ul>
+</body>
+</html>
+
